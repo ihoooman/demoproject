@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard{% endblock %}</title>
+    <style>
+        /* Root variables */
+        :root {
+            --primary-color: #764ba2;
+            --secondary-color: #667eea;
+            --background-color: #f5f7fa;
+            --card-color: #ffffff;
+            --text-color: #333333;
+            --text-light: #777777;
+            --shadow: 0 2px 10px rgba(0,0,0,0.08);
+            --shadow-hover: 0 5px 15px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+
+        /* Base styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            height: 100%;
+        }
+
+        /* Layout */
+        .site-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header and navigation */
+        .top-bar {
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+            text-decoration: none;
+        }
+
+        .main-nav {
+            display: flex;
+            margin: 0 auto 0 20px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            margin-right: 10px;
+            transition: background 0.3s;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* User section */
+        .user-section {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-name {
+            margin-right: 15px;
+            font-weight: 500;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Content area */
+        .content-wrapper {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--text-color);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: auto;
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .btn:hover {
+            background: var(--secondary-color);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-color);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            padding: 25px;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .top-bar {
+                flex-wrap: wrap;
+                padding: 15px;
+                justify-content: center;
+            }
+
+            .logo {
+                margin-bottom: 10px;
+            }
+
+            .main-nav {
+                order: 3;
+                margin: 15px 0 0;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .user-section {
+                margin-top: 0;
+            }
+
+            .content-wrapper {
+                padding: 15px;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="site-container">
+        <header class="top-bar">
+            <a href="{% url 'dashboard:group_list' %}" class="logo">Dashboard</a>
+            <nav class="main-nav">
+                <a href="{% url 'dashboard:group_list' %}" class="nav-link">Groups</a>
+                <a href="{% url 'dashboard:categories' %}" class="nav-link">Categories</a>
+            </nav>
+            <div class="user-section">
+                {% if user.is_authenticated %}
+                    <span class="user-name">Welcome, {{ user.username }}</span>
+                    <form method="post" action="{% url 'accounts:logout' %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="btn">Login</a>
+                {% endif %}
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <main class="main-content">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+
+        <footer class="footer">
+            <p>&copy; {% now "Y" %} Dashboard App</p>
+        </footer>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

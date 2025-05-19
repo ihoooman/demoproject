@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>{{ view.kwargs.pk }} دسته بندی</h2>
+
+  <form method="POST" action="{% url 'dashboard:save_responses' view.kwargs.pk %}">
+    {% csrf_token %}
+    <ul class="checklist">
+      {% for sub in subcategories %}
+        <li>
+          <div class="checklist-item">
+            <input type="checkbox" id="sub_{{ sub.id }}" class="checklist-toggle"
+                   data-target="questions_{{ sub.id }}">
+            <label for="sub_{{ sub.id }}">{{ sub.title }}</label>
+          </div>
+
+          <div id="questions_{{ sub.id }}" class="questions-container" style="display: none;">
+            <div class="question">
+              <label>سوال ۱: چطور این مورد را ارزیابی میکنید؟</label>
+              <input type="text" name="q_1_{{ sub.id }}" class="form-input">
+            </div>
+            <div class="question">
+              <label>سوال ۲: توضیحات بیشتر:</label>
+              <textarea name="q_2_{{ sub.id }}" class="form-textarea"></textarea>
+            </div>
+          </div>
+        </li>
+      {% empty %}
+        <li>هیچ زیر دسته‌ای یافت نشد</li>
+      {% endfor %}
+    </ul>
+
+    <button type="submit" class="submit-btn">ثبت پاسخ‌ها</button>
+  </form>
+
+  <a href="{% url 'dashboard:categories' %}">بازگشت به دسته‌بندی‌ها</a>
+
+  <style>
+    .checklist {
+      list-style-type: none;
+      padding: 0;
+    }
+    .checklist-item {
+      margin: 10px 0;
+      cursor: pointer;
+    }
+    .questions-container {
+      margin-right: 20px;
+      padding: 10px;
+      border-right: 2px solid #ddd;
+    }
+    .question {
+      margin: 10px 0;
+    }
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .submit-btn {
+      background-color: #764ba2;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const toggles = document.querySelectorAll('.checklist-toggle');
+      toggles.forEach(toggle => {
+        toggle.addEventListener('change', function() {
+          const targetId = this.getAttribute('data-target');
+          const targetElement = document.getElementById(targetId);
+          if (this.checked) {
+            targetElement.style.display = 'block';
+          } else {
+            targetElement.style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
+{% endblock %}

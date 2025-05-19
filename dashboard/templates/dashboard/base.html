@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head><title>my site</title></head>
+<body>
+  {% if user.is_authenticated %}
+    Welcome، {{ user.username }}! |
+    <a href="{% url 'accounts:logout' %}">Exit</a>
+  {% endif %}
+  <hr>
+  {% block content %}{% endblock %}
+</body>
+</html>

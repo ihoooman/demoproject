@@ -1,0 +1,109 @@
+{#{% extends "base.html" %}#}
+{#{% block content %}#}
+{#  <h2>Add Group{% if parent_pk %}On Group {{ parent_pk }}{% endif %}</h2>#}
+{#  <form method="post">#}
+{#    {% csrf_token %}#}
+{#    {{ form.as_p }}#}
+{#    <button type="submit">Save</button>#}
+{#  </form>#}
+{#{% endblock %}#}
+
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <h2>{% if parent_pk %}Add Subgroup to Group {{ parent_pk }}{% else %}Create New Group{% endif %}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save Group</button>
+    </form>
+    {% if parent_pk %}
+    <a href="{% url 'dashboard:group_children' parent_pk %}" class="link">Back to Group</a>
+    {% else %}
+    <a href="{% url 'dashboard:group_list' %}" class="link">Back to All Groups</a>
+    {% endif %}
+</div>
+
+<style>
+    /* Page layout */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 20px;
+    }
+    
+    /* Card styles */
+    .card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        width: 500px;
+        padding: 40px;
+        text-align: center;
+    }
+    
+    /* Typography */
+    h2 {
+        color: #333;
+        margin-bottom: 30px;
+        font-weight: 600;
+    }
+    
+    /* Form elements */
+    form {
+        text-align: left;
+    }
+    
+    label {
+        display: block;
+        margin-bottom: 5px;
+        color: #555;
+        font-size: 14px;
+    }
+    
+    input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-sizing: border-box;
+        font-size: 14px;
+    }
+    
+    button {
+        background: #764ba2;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 12px 20px;
+        width: 100%;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s;
+        margin-bottom: 20px;
+    }
+    
+    button:hover {
+        background: #667eea;
+    }
+    
+    /* Links */
+    .link {
+        margin-top: 10px;
+        display: block;
+        color: #764ba2;
+        text-decoration: none;
+    }
+    
+    .link:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}

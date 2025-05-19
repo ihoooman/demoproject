@@ -1,0 +1,263 @@
+{#<!-- accounts/templates/accounts/signup.html -->#}
+{#<h2>Signup</h2>#}
+{#<form method="post">#}
+{#  {% csrf_token %}#}
+{#  {{ form.as_p }}#}
+{#  <button type="submit">Signup</button>#}
+{#</form>#}
+{#<a href="{% url 'accounts:login' %}">Login here !</a>#}
+
+<!-- accounts/templates/accounts/signup.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h2>ایجاد حساب کاربری</h2>
+            <p class="auth-subtitle">برای ثبت‌نام، اطلاعات خود را وارد کنید</p>
+        </div>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message-box {% if message.tags %}{{ message.tags }}{% endif %}">
+                    <i class="message-icon {% if message.tags == 'error' %}error-icon{% else %}success-icon{% endif %}"></i>
+                    <p>{{ message }}</p>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                <div class="field-help">{{ field.help_text }}</div>
+                {% endif %}
+                {% if field.errors %}
+                <div class="input-error">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="auth-button">ثبت‌نام</button>
+        </form>
+
+        <div class="separator">
+            <span>یا</span>
+        </div>
+
+        <a href="{% url 'accounts:phone_signup' %}" class="phone-auth-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+            </svg>
+            ثبت‌نام با شماره تلفن
+        </a>
+
+        <div class="auth-links">
+            <a href="{% url 'accounts:login' %}" class="link">قبلا ثبت‌نام کرده‌اید؟ ورود به حساب</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        direction: rtl;
+    }
+
+    .auth-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        width: 450px;
+        padding: 35px;
+        margin: 20px;
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .auth-header h2 {
+        font-size: 24px;
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    .auth-subtitle {
+        color: #666;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .auth-form {
+        margin-top: 25px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #444;
+        text-align: right;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border 0.3s;
+    }
+
+    .form-group input:focus {
+        border-color: #2196F3;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.15);
+    }
+
+    .field-help {
+        font-size: 12px;
+        color: #777;
+        margin-top: 5px;
+        text-align: right;
+    }
+
+    .auth-button {
+        width: 100%;
+        padding: 14px;
+        background-color: #2196F3;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .auth-button:hover {
+        background-color: #1976D2;
+    }
+
+    .separator {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 20px 0;
+    }
+
+    .separator::before,
+    .separator::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .separator span {
+        padding: 0 10px;
+        color: #777;
+        font-size: 14px;
+    }
+
+    .phone-auth-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 14px;
+        background-color: #f5f5f5;
+        color: #555;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        margin-bottom: 20px;
+    }
+
+    .phone-auth-button:hover {
+        background-color: #e9e9e9;
+    }
+
+    .phone-auth-button svg {
+        margin-left: 10px;
+    }
+
+    .auth-links {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .link {
+        color: #2196F3;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    .link:hover {
+        color: #1565C0;
+        text-decoration: underline;
+    }
+
+    .messages {
+        margin-bottom: 20px;
+    }
+
+    .message-box {
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+    }
+
+    .error {
+        background-color: #FFEBEE;
+        color: #D32F2F;
+    }
+
+    .success {
+        background-color: #E8F5E9;
+        color: #2E7D32;
+    }
+
+    .message-icon {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        margin-left: 10px;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .error-icon {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D32F2F'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/%3E%3C/svg%3E");
+    }
+
+    .success-icon {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232E7D32'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z'/%3E%3C/svg%3E");
+    }
+
+    .input-error {
+        color: #D32F2F;
+        font-size: 12px;
+        margin-top: 5px;
+        text-align: right;
+    }
+</style>
+{% endblock %}

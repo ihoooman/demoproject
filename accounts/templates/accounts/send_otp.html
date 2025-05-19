@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h2>ورود با شماره تلفن</h2>
+            <p class="auth-subtitle">شماره تلفن خود را وارد کنید تا کد تایید دریافت نمایید</p>
+        </div>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message-box {% if message.tags %}{{ message.tags }}{% endif %}">
+                    <i class="message-icon {% if message.tags == 'error' %}error-icon{% else %}success-icon{% endif %}"></i>
+                    <p>{{ message }}</p>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="{{ form.phone.id_for_label }}">شماره تلفن</label>
+                {{ form.phone }}
+                {% if form.phone.errors %}
+                <div class="input-error">{{ form.phone.errors }}</div>
+                {% endif %}
+            </div>
+            <button type="submit" class="auth-button">دریافت کد تایید</button>
+        </form>
+        <div class="auth-links">
+            <a href="{% url 'accounts:login' %}" class="link">بازگشت به صفحه ورود</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+    }
+
+    .auth-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        width: 450px;
+        padding: 35px;
+        margin: 20px;
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .auth-header h2 {
+        font-size: 24px;
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    .auth-subtitle {
+        color: #666;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .auth-form {
+        margin-top: 25px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #444;
+        text-align: right;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border 0.3s;
+        direction: rtl;
+    }
+
+    .form-group input:focus {
+        border-color: #2196F3;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.15);
+    }
+
+    .auth-button {
+        width: 100%;
+        padding: 14px;
+        background-color: #2196F3;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .auth-button:hover {
+        background-color: #1976D2;
+    }
+
+    .auth-links {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .link {
+        color: #2196F3;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    .link:hover {
+        color: #1565C0;
+        text-decoration: underline;
+    }
+
+    .messages {
+        margin-bottom: 20px;
+    }
+
+    .message-box {
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+    }
+
+    .error {
+        background-color: #FFEBEE;
+        color: #D32F2F;
+    }
+
+    .success {
+        background-color: #E8F5E9;
+        color: #2E7D32;
+    }
+
+    .message-icon {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        margin-left: 10px;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .error-icon {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D32F2F'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/%3E%3C/svg%3E");
+    }
+
+    .success-icon {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232E7D32'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z'/%3E%3C/svg%3E");
+    }
+
+    .input-error {
+        color: #D32F2F;
+        font-size: 12px;
+        margin-top: 5px;
+        text-align: right;
+    }
+</style>
+{% endblock %}
