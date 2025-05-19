@@ -1,6 +1,9 @@
 
 # Survey Management System
 
+![Django CI](https://github.com/ihoooman/demoproject/actions/workflows/ci.yml/badge.svg)
+
+
 > A comprehensive Django-based survey and assessment management system for creating hierarchical groups, categories, and subcategories to organize questions and collect responses.
 
 ![System Screenshot](screenshots/demo.png)
