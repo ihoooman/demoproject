@@ -100,6 +100,53 @@ The **Survey Management System** is designed to help organizations build flexibl
 
 ---
 
+## 🐳 Docker Deployment
+
+You can also run this application using Docker, which simplifies the setup process and ensures consistency across different environments.
+
+### Using Docker
+
+1. **Build and run with Docker**
+
+   ```bash
+   # Build the Docker image
+   docker build -t survey-management-system .
+
+   # Run the container
+   docker run -p 8000:8000 survey-management-system
+   ```
+
+2. **Using Docker Compose** (recommended)
+
+   ```bash
+   # Start all services
+   docker-compose up
+
+   # Run in detached mode
+   docker-compose up -d
+
+   # Stop all services
+   docker-compose down
+   ```
+
+3. **Access the application**
+
+   Visit `http://localhost:8000` in your browser.
+
+### Environment Variables
+
+When using Docker, you can configure the application by setting environment variables in the `docker-compose.yml` file or by passing them to the `docker run` command:
+
+```bash
+docker run -p 8000:8000 \
+  -e DEBUG=False \
+  -e SECRET_KEY=your_secret_key \
+  -e ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com \
+  survey-management-system
+```
+
+---
+
 ## 🔧 Configuration
 
 ### Google OAuth
