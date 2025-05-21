@@ -4,7 +4,8 @@ FROM python:3.11-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV DJANGO_SETTINGS_MODULE=LastDjangoProject.settings
-ARG ALLOWED_HOSTS=$ALLOWED_HOSTS
+ARG ALLOWED_HOSTS
+ENV ALLOWED_HOSTS=$ALLOWED_HOSTS
 
 # Set work directory
 WORKDIR /app
@@ -34,6 +35,7 @@ RUN mkdir -p /app/staticfiles && \
 
 # Change ownership of all files to the non-root user
 RUN chown -R appuser:appuser /app
+RUN echo $ALLOWED_HOSTS
 
 # Switch to non-root user
 USER appuser
