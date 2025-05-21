@@ -8,7 +8,13 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    
+    environment:
+      name: production
+      url: https://demoproject-g54s.onrender.com
+      
     steps:
       - name: Trigger Render Deploy Hook
         run: |
           curl -X POST "https://api.render.com/deploy/srv-d0mr2hmuk2gs73ftku70?key=cK_u2MIEFl4"
+
