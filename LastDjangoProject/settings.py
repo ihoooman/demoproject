@@ -27,6 +27,7 @@ SECRET_KEY = 'django-insecure-^-yp9i9n+tn0r(%)y!92c206-az0i^llom=#4j^2)-@az%0e0#
 DEBUG = True
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS.append("demoproject-production-6b92.up.railway.app")
 #hosts = os.environ.get("ALLOWED_HOSTS", "")
 # if hosts:
 #     ALLOWED_HOSTS = [h.strip() for h in hosts.split(",")]
