@@ -44,4 +44,6 @@ USER appuser
 EXPOSE 8000
 
 # Run the application using gunicorn instead of the development server
-CMD ["gunicorn", "LastDjangoProject.wsgi", "--bind", "0.0.0.0:8000"]
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+ENTRYPOINT ["/start.sh"]
