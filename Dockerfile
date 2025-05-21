@@ -24,6 +24,9 @@ RUN adduser --disabled-password --gecos "" appuser
 # Copy project
 COPY . .
 
+# Add STATIC_ROOT setting to Django settings
+RUN echo "STATIC_ROOT = '/app/staticfiles'" >> LastDjangoProject/settings.py
+
 # Collect static files
 RUN mkdir -p /app/staticfiles && \
     python manage.py collectstatic --noinput
@@ -37,5 +40,5 @@ USER appuser
 # Expose port
 EXPOSE 8000
 
-# Run the application
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Run the application using gunicorn instead of the development server
+CMD ["gunicorn", "LastDjangoProject.wsgi", "--bind", "0.0.0.0:8000"]
