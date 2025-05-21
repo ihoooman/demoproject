@@ -21,4 +21,5 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
             # Save user data
             user.save()
 
+
         return user

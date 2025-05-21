@@ -11,6 +11,8 @@ from django.contrib import messages
 from django.core.cache import cache
 from django.contrib.auth import login
 from kavenegar import KavenegarAPI, APIException
+from django.utils.crypto import get_random_string
+
 
 
 class SignUpView(CreateView):
@@ -158,7 +160,8 @@ class VerifyOTPView(View):
                     if is_registration:
                         # Create a new user
                         username = f'phone_{phone}'
-                        password = CustomUser.objects.make_random_password()
+                        #password = CustomUser.objects.make_random_password()
+                        password = get_random_string(length=12)
                         user = CustomUser.objects.create_user(
                             username=username,
                             phone_number=phone,
