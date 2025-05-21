@@ -13,8 +13,15 @@ jobs:
       name: production
       url: https://demoproject-g54s.onrender.com
       
+          environment:
+      name: production
+      url: https://demoproject-production-6b92.up.railway.app
+      
     steps:
       - name: Trigger Render Deploy Hook
         run: |
           curl -X POST "https://api.render.com/deploy/srv-d0mr2hmuk2gs73ftku70?key=cK_u2MIEFl4"
+
+
+          
 
