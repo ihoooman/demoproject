@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -95,11 +96,19 @@ WSGI_APPLICATION = 'LastDjangoProject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=os.environ['DATABASE_URL'],
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
 
 
@@ -191,3 +200,7 @@ CACHES = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'
 KAVENEGAR_API_KEY = '6B533653785957676E636938795A4A4F5945396A64304E553861736752743976352F464F7951725A666F6B3D'
 KAVENEGAR_SENDER = '2000660110'  # Your dedicated line number
 GOOGLE_CLIENT_ID = '848254333062-1bpjif2lc86m7saggrsaflfanbtnvo8j.apps.googleusercontent.com'
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://demoproject-production-6b92.up.railway.app",
+]
