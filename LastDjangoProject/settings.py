@@ -33,6 +33,10 @@ if hosts:
 else:
     ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://demoproject-production-6b92.up.railway.app",
+]
+
 
 # Application definition
 
