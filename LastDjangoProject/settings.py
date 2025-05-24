@@ -199,6 +199,3 @@ KAVENEGAR_API_KEY = '6B533653785957676E636938795A4A4F5945396A64304E5538617367527
 KAVENEGAR_SENDER = '2000660110'  # Your dedicated line number
 GOOGLE_CLIENT_ID = '848254333062-1bpjif2lc86m7saggrsaflfanbtnvo8j.apps.googleusercontent.com'
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://demoproject-production-6b92.up.railway.app",
-]
