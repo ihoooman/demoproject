@@ -30,7 +30,6 @@
 #        run: |
 #          python -m pytest dashboard/tests accounts/tests --maxfail=1 --disable-warnings -q
 
-
 name: Django CI
 
 on:
@@ -59,7 +58,8 @@ jobs:
           --health-retries 5
 
     env:
-      DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+      # SSL را غیرفعال می‌کنیم تا Postgres محلی بدون SSL در CI کار کند
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
 
     steps:
       - uses: actions/checkout@v3
