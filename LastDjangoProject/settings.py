@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'login.apps.LoginConfig',
     'dashboard.apps.DashboardConfig',
-    'accounts.apps.AccountsConfig',  # Added comma here
+    'accounts.apps.AccountsConfig',
     'django.contrib.sites',  # Required for allauth
     'allauth',
     'allauth.account',
@@ -119,7 +119,7 @@ DATABASES = {
     )
 }
 
-# ← حتماً در اینجا یک خط خالی باشه
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
@@ -174,7 +174,6 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # Google OAuth settings
-# In settings.py
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
@@ -200,7 +199,6 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_ADAPTER = 'accounts.adapter.CustomSocialAccountAdapter'
-
 LOGIN_URL = 'accounts:login'
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'http'
 LOGIN_REDIRECT_URL = '/'
@@ -208,5 +206,5 @@ LOGOUT_REDIRECT_URL = 'accounts:login'
 AUTH_USER_MODEL = 'accounts.CustomUser'
 CACHES = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}}
 KAVENEGAR_API_KEY = '6B533653785957676E636938795A4A4F5945396A64304E553861736752743976352F464F7951725A666F6B3D'
-KAVENEGAR_SENDER = '2000660110'  # Your dedicated line number
+KAVENEGAR_SENDER = '2000660110'
 GOOGLE_CLIENT_ID = '848254333062-1bpjif2lc86m7saggrsaflfanbtnvo8j.apps.googleusercontent.com'
