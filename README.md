@@ -5,8 +5,14 @@
   <img src="./assets/logo.png" alt="DemoProject Logo" width="250" />
 </p>
 
-![Django CI](https://github.com/ihoooman/demoproject/actions/workflows/ci.yml/badge.svg)
-
+<div align="center">
+  
+  ![Django CI](https://github.com/ihoooman/demoproject/actions/workflows/ci.yml/badge.svg)
+  ![License](https://img.shields.io/github/license/ihoooman/demoproject.svg)
+  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+  ![Issues](https://img.shields.io/github/issues/ihoooman/demoproject.svg)
+  
+</div>
 
 > A comprehensive Django-based survey and assessment management system for creating hierarchical groups, categories, and subcategories to organize questions and collect responses.
 
