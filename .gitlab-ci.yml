@@ -6,8 +6,8 @@ stages:
   - deploy
 
 variables:
-  DOCKER_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
-  DOCKER_TAG: $CI_COMMIT_SHORT_SHA
+  DOCKER_IMAGE: $CI_REGISTRY_IMAGE
+  DOCKER_TAG: $CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
   POSTGRES_DB: test_db
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
@@ -40,6 +40,7 @@ test:
   only:
     - main
     - merge_requests
+    - checklist
 
 # Build stage
 build:
@@ -48,30 +49,29 @@ build:
   services:
     - docker:20.10.16-dind
   before_script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
   script:
-    - docker build -t $DOCKER_IMAGE:$DOCKER_TAG .
-    - docker push $DOCKER_IMAGE:$DOCKER_TAG
-    # Tag as latest if on main branch
+    # حالا فقط یک ':' بین اسم و تگ داریم
+    - docker build -t "$DOCKER_IMAGE:$DOCKER_TAG" .
+    - docker push "$DOCKER_IMAGE:$DOCKER_TAG"
     - if [ "$CI_COMMIT_REF_NAME" = "main" ]; then
-        docker tag $DOCKER_IMAGE:$DOCKER_TAG $DOCKER_IMAGE:latest;
-        docker push $DOCKER_IMAGE:latest;
+        docker tag "$DOCKER_IMAGE:$DOCKER_TAG" "$DOCKER_IMAGE:latest";
+        docker push "$DOCKER_IMAGE:latest";
       fi
   only:
     - main
+    - checklist
     - tags
 
-# Deploy stage (commented out as deployment details are environment-specific)
-# Uncomment and customize based on your deployment environment
-# deploy:
-#   stage: deploy
-#   image: alpine:latest
-#   before_script:
-#     - apk add --no-cache curl
-#   script:
-#     - echo "Deploying application..."
-#     # Add deployment commands here (e.g., kubectl, ssh, etc.)
-#   environment:
-#     name: production
-#   only:
-#     - main
+deploy:
+  stage: deploy
+  image: curlimages/curl:latest
+  only:
+    - main
+  environment:
+    name: production
+    url: https://demoproject-production-6b92.up.railway.app
+  script:
+    - |
+      curl -X POST \
+        "https://api.render.com/deploy/srv-d0mr2hmuk2gs73ftku70?key=cK_u2MIEFl4"
