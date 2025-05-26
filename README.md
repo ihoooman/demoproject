@@ -1,5 +1,9 @@
 
-# Survey Management System
+# Demo Project
+
+<p align="center">
+  <img src="./assets/logo.png" alt="DemoProject Logo" width="250" />
+</p>
 
 ![Django CI](https://github.com/ihoooman/demoproject/actions/workflows/ci.yml/badge.svg)
 
