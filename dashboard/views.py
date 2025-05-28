@@ -7,7 +7,12 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, FormView
 from .models import Group, Subcategory, Category, Response, ChecklistQuestion
-from .forms import ChecklistQuestionForm
+from django.contrib import messages
+from .forms import * # Add CategoryForm here
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .models import Category
+from .forms import *
 
 
 class GroupListView(LoginRequiredMixin, ListView):
@@ -181,3 +186,98 @@ def delete_checklist_question(request, pk):
         return JsonResponse({'status': 'success'})
     except ChecklistQuestion.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Question not found'}, status=404)
+
+class CategoryCreateView(LoginRequiredMixin, CreateView):
+    model = Category
+    fields = ['title']
+    template_name = 'dashboard/category_form.html'
+    success_url = reverse_lazy('dashboard:categories')
+    login_url = 'accounts:login'
+
+
+def category_edit(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Category updated successfully!')
+            return redirect('dashboard:categories')
+    else:
+        form = CategoryForm(instance=category)
+
+    return render(request, 'dashboard/category_form.html', {
+        'form': form,
+        'category': category,
+        'is_edit': True
+    })
+
+
+def category_delete(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    category.delete()
+    messages.success(request, 'Category deleted successfully!')
+    return redirect('dashboard:categories')
+
+
+class SubcategoryListView(LoginRequiredMixin, ListView):
+    model = Subcategory
+    template_name = 'dashboard/subcategory_list.html'
+    context_object_name = 'subcategories'
+    login_url = 'accounts:login'
+
+    def get_queryset(self):
+        category_id = self.kwargs.get('pk')
+        return Subcategory.objects.filter(category_id=category_id)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category'] = get_object_or_404(Category, pk=self.kwargs.get('pk'))
+        return context
+
+
+class SubcategoryCreateView(LoginRequiredMixin, CreateView):
+    model = Subcategory
+    form_class = SubcategoryForm
+    template_name = 'dashboard/subcategory_form.html'
+    login_url = 'accounts:login'
+
+    def form_valid(self, form):
+        category_id = self.kwargs.get('pk')
+        form.instance.category_id = category_id
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('dashboard:subcategories', kwargs={'pk': self.kwargs.get('pk')})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category'] = get_object_or_404(Category, pk=self.kwargs.get('pk'))
+        context['is_edit'] = False
+        return context
+
+
+class SubcategoryUpdateView(LoginRequiredMixin, UpdateView):
+    model = Subcategory
+    form_class = SubcategoryForm
+    template_name = 'dashboard/subcategory_form.html'
+    login_url = 'accounts:login'
+
+    def get_success_url(self):
+        return reverse_lazy('dashboard:subcategories', kwargs={'pk': self.object.category.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category'] = self.object.category
+        context['is_edit'] = True
+        return context
+
+
+@login_required
+def subcategory_delete(request, pk):
+    subcategory = get_object_or_404(Subcategory, pk=pk)
+    category_id = subcategory.category.pk
+    subcategory.delete()
+    messages.success(request, 'Subcategory deleted successfully!')
+    return redirect('dashboard:subcategories', pk=category_id)

@@ -34,4 +34,10 @@ urlpatterns = [
     # Administrative URLs
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
+    path('categories/add/', views.CategoryCreateView.as_view(), name='category_add'),
+    path('categories/<int:pk>/edit/', views.category_edit, name='category_edit'),
+    path('categories/<int:pk>/delete/', views.category_delete, name='category_delete'),
+
+    path('categories/<int:category_id>/save-responses/', views.save_responses, name='save_responses'),
+    path('categories/<int:category_id>/subcategory/add/', views.SubcategoryCreateView.as_view(), name='subcategory_add'),
 ]
