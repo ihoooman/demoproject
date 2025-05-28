@@ -11,8 +11,12 @@ from django.contrib import messages
 from .forms import * # Add CategoryForm here
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .models import Category
+from .models import *
 from .forms import *
+from django.views import View
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .forms import ImageUploadForm
 
 
 class GroupListView(LoginRequiredMixin, ListView):
@@ -281,3 +285,29 @@ def subcategory_delete(request, pk):
     subcategory.delete()
     messages.success(request, 'Subcategory deleted successfully!')
     return redirect('dashboard:subcategories', pk=category_id)
+
+
+class UploadCenterView(View):
+    def get(self, request):
+        images = UploadedImage.objects.all().order_by('-uploaded_at')
+        form = ImageUploadForm()
+        return render(request, 'dashboard/upload_center.html', {'images': images, 'form': form})
+
+def upload_image(request):
+    if request.method == 'POST':
+        form = ImageUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = form.save(commit=False)
+            if request.user.is_authenticated:
+                image.user = request.user
+            image.save()
+            messages.success(request, 'Image uploaded successfully!')
+            return redirect('dashboard:upload_center')
+    return redirect('dashboard:upload_center')
+
+def delete_image(request, pk):
+    image = get_object_or_404(UploadedImage, pk=pk)
+    if request.method == 'POST':
+        image.delete()
+        messages.success(request, 'Image deleted successfully!')
+    return redirect('dashboard:upload_center')
