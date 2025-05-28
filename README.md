@@ -11,7 +11,10 @@
   ![License](https://img.shields.io/github/license/ihoooman/demoproject.svg)
   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
   ![Issues](https://img.shields.io/github/issues/ihoooman/demoproject.svg)
-  
+  </img> <img src="https://img.shields.io/badge/deployed%20on-Railway-7B16FF.svg" alt="Deployed on Railway"></img>
+
+
+
 </div>
 
 > A comprehensive Django-based survey and assessment management system for creating hierarchical groups, categories, and subcategories to organize questions and collect responses.
@@ -31,6 +34,12 @@ The **Survey Management System** is designed to help organizations build flexibl
   * Custom user model supporting email and phone number
   * Social login via Google OAuth (django-allauth)
   * Phone verification with SMS (Kavenegar API)
+
+* **Upload Center**
+  * Upload center for images and media files
+  * Secure storage and management of uploaded content
+  * Store images, documents, and other media
+  * Easy access to uploaded content in forms and responses
 
 * **Hierarchical Organization**
 
@@ -54,12 +63,12 @@ The **Survey Management System** is designed to help organizations build flexibl
 
 ## 🛠 Technologies Used
 
-| Layer              | Tools & Libraries                         |
-| ------------------ | ----------------------------------------- |
-| **Backend**        | Django 5.2.1, Python 3.x, SQLite          |
-| **Authentication** | django-allauth, custom phone auth         |
-| **Frontend**       | Django Templates, HTML5, CSS3, JavaScript |
-| **APIs**           | Google OAuth REST API, Kavenegar SMS API  |
+| Layer              | Tools & Libraries                             |
+| ------------------ |-----------------------------------------------|
+| **Backend**        | Django 5.2.1, Python 3.x, PostgreSQL          |
+| **Authentication** | django-allauth, custom phone auth             |
+| **Frontend**       | Django Templates, HTML5, CSS3, JavaScript     |
+| **APIs**           | Google OAuth REST API, Kavenegar SMS API<br/> |
 
 ---
 
@@ -188,6 +197,18 @@ docker run -p 8000:8000 \
    ```
 
 ---
+## 🚀 Deployment
+This application is deployed on Railway with continuous deployment set up via GitHub Actions.
+
+Live Demo: 
+   ```
+https://demoproject-production-6b92.up.railway.app
+   ```
+The deployment workflow automatically triggers a rebuild on Render when changes are pushed to the main branch.
+
+
+---
+
 
 ## 📂 Project Structure
 
