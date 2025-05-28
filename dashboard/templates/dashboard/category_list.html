@@ -1,13 +1,269 @@
 {% extends "base.html" %}
 {% block content %}
-  <h2>Categories</h2>
-  <ul>
-    {% for cat in categories %}
-      <li>
-        <a href="{% url 'dashboard:subcategories' cat.pk %}">
-          {{ cat.title }}
-        </a>
-      </li>
+<div class="categories-container">
+  <div class="header">
+    <a href="{% url 'dashboard:upload_center' %}" class="upload-btn">Upload Center</a>
+    <a href="{% url 'dashboard:category_add' %}" class="add-btn">+ Add Category</a>
+  </div>
+</div>
+
+  {% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+      <div class="message-box {% if message.tags %}{{ message.tags }}{% endif %}">
+        {{ message }}
+        <span class="message-icon {% if message.tags %}{{ message.tags }}-icon{% endif %}"></span>
+      </div>
     {% endfor %}
-  </ul>
+  </div>
+  {% endif %}
+
+  <div class="category-list">
+    {% if categories %}
+      <div class="categories-grid">
+        {% for cat in categories %}
+          <div class="category-card" style="border-left: 4px solid {{ cat.color|default:'#764ba2' }}">
+            <div class="category-header">
+              <div class="category-icon {% if cat.icon %}{{ cat.icon }}-icon{% else %}default-icon{% endif %}"></div>
+              <h3>{{ cat.title }}</h3>
+            </div>
+            <div class="category-stats">
+              <span>{{ cat.subcategory_set.count }} subcategories</span>
+            </div>
+            <div class="category-actions">
+              <a href="{% url 'dashboard:subcategories' cat.pk %}" class="action-btn view-btn">View</a>
+              <a href="{% url 'dashboard:category_edit' cat.pk %}" class="action-btn edit-btn">Edit</a>
+              <a href="{% url 'dashboard:category_delete' cat.pk %}" class="action-btn delete-btn" onclick="return confirm('Are you sure you want to delete this category?')">Delete</a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-icon"></div>
+        <p>No categories have been created yet.</p>
+        <a href="{% url 'dashboard:category_add' %}" class="add-btn">Add Your First Category</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  .categories-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 30px;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+
+  .header h2 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .add-btn {
+    background-color: #764ba2;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    transition: background-color 0.3s;
+  }
+
+  .add-btn:hover {
+    background-color: #633d8c;
+  }
+
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .category-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    padding: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .category-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+
+  .category-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .category-icon {
+    width: 32px;
+    height: 32px;
+    margin-right: 12px;
+    background-color: #f5f5f5;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .default-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23555'%3E%3Cpath d='M4 11h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1zm10 0h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1zM4 21h6a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1zm10 0h6a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1z'/%3E%3C/svg%3E");
+    background-size: 18px;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .category-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  .category-stats {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 15px;
+  }
+
+  .category-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .action-btn {
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    flex: 1;
+  }
+
+  .view-btn {
+    background-color: #f5f5f5;
+    color: #333;
+  }
+
+  .edit-btn {
+    background-color: #2196F3;
+    color: white;
+  }
+
+  .delete-btn {
+    background-color: #f5f5f5;
+    color: #e53935;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 50px 0;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  }
+
+  .empty-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23764ba2'%3E%3Cpath d='M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.6;
+  }
+
+  .empty-state p {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 16px;
+  }
+
+  .messages {
+    margin-bottom: 20px;
+  }
+
+  .message-box {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .error {
+    background-color: #FFEBEE;
+    color: #D32F2F;
+  }
+
+  .success {
+    background-color: #E8F5E9;
+    color: #2E7D32;
+  }
+
+  .message-icon {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .error-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D32F2F'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/%3E%3C/svg%3E");
+  }
+
+  .success-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232E7D32'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z'/%3E%3C/svg%3E");
+  }
+
+  @media (max-width: 768px) {
+    .categories-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
+    }
+  }
+  .header-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.upload-btn {
+  background-color: #2196F3;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  transition: background-color 0.3s;
+}
+
+.upload-btn:hover {
+  background-color: #1976D2;
+}
+</style>
 {% endblock %}

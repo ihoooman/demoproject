@@ -31,6 +31,19 @@ class Subcategory(models.Model):
         return self.title
 
 
+class ChecklistQuestion(models.Model):
+    question_text = models.CharField(max_length=255)
+    order = models.PositiveIntegerField(default=0)
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return self.question_text
+
+
 class SubcategoryResponse(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE)

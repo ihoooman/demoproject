@@ -5,8 +5,18 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
-from django.views.generic import ListView, CreateView, DetailView
-from .models import Group, Subcategory, Category, Response
+from django.views.generic import ListView, CreateView, DetailView, UpdateView, FormView
+from .models import Group, Subcategory, Category, Response, ChecklistQuestion
+from django.contrib import messages
+from .forms import * # Add CategoryForm here
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .models import *
+from .forms import *
+from django.views import View
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .forms import ImageUploadForm
 
 
 class GroupListView(LoginRequiredMixin, ListView):
@@ -69,6 +79,34 @@ class SubgroupFormView(LoginRequiredMixin, DetailView):
     context_object_name = 'group'
     login_url = 'accounts:login'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['questions'] = ChecklistQuestion.objects.filter(active=True)
+        return context
+
+
+class ChecklistSettingsView(LoginRequiredMixin, ListView):
+    model = ChecklistQuestion
+    template_name = 'dashboard/checklist_settings.html'
+    context_object_name = 'questions'
+    login_url = 'accounts:login'
+
+
+class ChecklistQuestionCreateView(LoginRequiredMixin, CreateView):
+    model = ChecklistQuestion
+    form_class = ChecklistQuestionForm
+    template_name = 'dashboard/checklist_question_form.html'
+    success_url = reverse_lazy('dashboard:checklist_settings')
+    login_url = 'accounts:login'
+
+
+class ChecklistQuestionUpdateView(LoginRequiredMixin, UpdateView):
+    model = ChecklistQuestion
+    form_class = ChecklistQuestionForm
+    template_name = 'dashboard/checklist_question_form.html'
+    success_url = reverse_lazy('dashboard:checklist_settings')
+    login_url = 'accounts:login'
+
 
 @login_required
 @require_POST
@@ -124,39 +162,152 @@ def save_subgroup_responses(request, group_id):
     if request.method == 'POST':
         group = get_object_or_404(Group, pk=group_id)
 
-        # Create response entries for each question
-        assessment = request.POST.get('assessment')
-        rating = request.POST.get('rating')
-        comments = request.POST.get('comments')
+        # Save responses for each question
+        for key, value in request.POST.items():
+            if key.startswith('question_') and value.strip():
+                # Format: question_id
+                question_id = key.split('_')[1]
+                question = get_object_or_404(ChecklistQuestion, pk=question_id)
 
-        # Save each response to the database
-        if assessment:
-            Response.objects.create(
-                user=request.user,
-                subcategory=None,
-                group=group,
-                question="Assessment",
-                answer=assessment
-            )
-
-        if rating:
-            Response.objects.create(
-                user=request.user,
-                subcategory=None,
-                group=group,
-                question="Rating",
-                answer=rating
-            )
-
-        if comments:
-            Response.objects.create(
-                user=request.user,
-                subcategory=None,
-                group=group,
-                question="Comments",
-                answer=comments
-            )
+                Response.objects.create(
+                    user=request.user,
+                    group=group,
+                    question=question.question_text,
+                    answer=value
+                )
 
         return JsonResponse({'status': 'success'})
 
     return JsonResponse({'status': 'error'}, status=400)
+
+
+@login_required
+@require_POST
+def delete_checklist_question(request, pk):
+    try:
+        question = ChecklistQuestion.objects.get(pk=pk)
+        question.delete()
+        return JsonResponse({'status': 'success'})
+    except ChecklistQuestion.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Question not found'}, status=404)
+
+class CategoryCreateView(LoginRequiredMixin, CreateView):
+    model = Category
+    fields = ['title']
+    template_name = 'dashboard/category_form.html'
+    success_url = reverse_lazy('dashboard:categories')
+    login_url = 'accounts:login'
+
+
+def category_edit(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Category updated successfully!')
+            return redirect('dashboard:categories')
+    else:
+        form = CategoryForm(instance=category)
+
+    return render(request, 'dashboard/category_form.html', {
+        'form': form,
+        'category': category,
+        'is_edit': True
+    })
+
+
+def category_delete(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    category.delete()
+    messages.success(request, 'Category deleted successfully!')
+    return redirect('dashboard:categories')
+
+
+class SubcategoryListView(LoginRequiredMixin, ListView):
+    model = Subcategory
+    template_name = 'dashboard/subcategory_list.html'
+    context_object_name = 'subcategories'
+    login_url = 'accounts:login'
+
+    def get_queryset(self):
+        category_id = self.kwargs.get('pk')
+        return Subcategory.objects.filter(category_id=category_id)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category'] = get_object_or_404(Category, pk=self.kwargs.get('pk'))
+        return context
+
+
+class SubcategoryCreateView(LoginRequiredMixin, CreateView):
+    model = Subcategory
+    form_class = SubcategoryForm
+    template_name = 'dashboard/subcategory_form.html'
+    login_url = 'accounts:login'
+
+    def form_valid(self, form):
+        category_id = self.kwargs.get('pk')
+        form.instance.category_id = category_id
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('dashboard:subcategories', kwargs={'pk': self.kwargs.get('pk')})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category'] = get_object_or_404(Category, pk=self.kwargs.get('pk'))
+        context['is_edit'] = False
+        return context
+
+
+class SubcategoryUpdateView(LoginRequiredMixin, UpdateView):
+    model = Subcategory
+    form_class = SubcategoryForm
+    template_name = 'dashboard/subcategory_form.html'
+    login_url = 'accounts:login'
+
+    def get_success_url(self):
+        return reverse_lazy('dashboard:subcategories', kwargs={'pk': self.object.category.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category'] = self.object.category
+        context['is_edit'] = True
+        return context
+
+
+@login_required
+def subcategory_delete(request, pk):
+    subcategory = get_object_or_404(Subcategory, pk=pk)
+    category_id = subcategory.category.pk
+    subcategory.delete()
+    messages.success(request, 'Subcategory deleted successfully!')
+    return redirect('dashboard:subcategories', pk=category_id)
+
+
+class UploadCenterView(View):
+    def get(self, request):
+        images = UploadedImage.objects.all().order_by('-uploaded_at')
+        form = ImageUploadForm()
+        return render(request, 'dashboard/upload_center.html', {'images': images, 'form': form})
+
+def upload_image(request):
+    if request.method == 'POST':
+        form = ImageUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = form.save(commit=False)
+            if request.user.is_authenticated:
+                image.user = request.user
+            image.save()
+            messages.success(request, 'Image uploaded successfully!')
+            return redirect('dashboard:upload_center')
+    return redirect('dashboard:upload_center')
+
+def delete_image(request, pk):
+    image = get_object_or_404(UploadedImage, pk=pk)
+    if request.method == 'POST':
+        image.delete()
+        messages.success(request, 'Image deleted successfully!')
+    return redirect('dashboard:upload_center')

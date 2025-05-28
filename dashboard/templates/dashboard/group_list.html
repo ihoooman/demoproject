@@ -12,6 +12,9 @@
                 <i class="icon">📂</i> Current Subgroups
             </a>
             {% endif %}
+            <a href="{% url 'dashboard:checklist_settings' %}" class="nav-link">
+                <i class="icon">⚙️</i> Checklist Settings
+            </a>
             {% if user.is_authenticated %}
             <a href="#" class="nav-link delete-selected" id="delete-selected">
                 <i class="icon">🗑️</i> Delete Selected
@@ -20,65 +23,59 @@
         </div>
     </div>
 
-    <div class="content">
-        <div class="header">
-            <h2>{% if parent_pk %}Subgroups{% else %}Groups{% endif %}</h2>
-            {% if parent_pk %}
-            <a href="{% url 'dashboard:group_add_child' parent_pk %}" class="btn">+ New Subgroup</a>
-            {% else %}
-            <a href="{% url 'dashboard:group_add' %}" class="btn">+ New Group</a>
-            {% endif %}
+    <div class="main-content">
+        <div class="header-section">
+            <h1>{% if parent_pk %}Subgroups{% else %}Groups{% endif %}</h1>
+            <a href="{% if parent_pk %}{% url 'dashboard:group_add_child' parent_pk %}{% else %}{% url 'dashboard:group_add' %}{% endif %}" class="add-btn">
+                + Add {% if parent_pk %}Subgroup{% else %}Group{% endif %}
+            </a>
+            <a href="{% url 'dashboard:upload_center' %}" class="upload-btn">Upload Center</a>
         </div>
 
-        <div class="groups-container">
-            {% if groups %}
-                {% for g in groups %}
-                <div class="group-card">
-                    <div class="group-header">
-                        <label class="checkbox-container">
-                            <input type="checkbox" class="group-checkbox" data-group-id="{{ g.pk }}">
-                            <span class="checkmark"></span>
-                        </label>
-                        <span class="group-title">{{ g.title }}</span>
-                    </div>
-                    <div class="group-actions">
-                        <a href="{% url 'dashboard:group_children' g.pk %}" class="group-btn">View Subgroups</a>
-                        <a href="{% url 'dashboard:subgroup_form' g.pk %}" class="group-btn form-btn">Fill Checklist</a>
-                        <a href="#" class="delete-btn" data-group-id="{{ g.pk }}">Delete</a>
-                    </div>
+        <div class="group-grid">
+            {% for g in groups %}
+            <div class="group-card">
+                <div class="group-header">
+                    <label class="checkbox-container">
+                        <input type="checkbox" class="group-checkbox" data-group-id="{{ g.pk }}">
+                        <span class="checkmark"></span>
+                    </label>
+                    <h3>{{ g.title }}</h3>
                 </div>
-                {% endfor %}
-            {% else %}
-                <div class="empty-state">
-                    <div class="empty-icon">📭</div>
-                    <p>No groups found</p>
-                    {% if parent_pk %}
-                    <a href="{% url 'dashboard:group_add_child' parent_pk %}" class="btn">Create First Subgroup</a>
-                    {% else %}
-                    <a href="{% url 'dashboard:group_add' %}" class="btn">Create First Group</a>
-                    {% endif %}
+                <div class="group-actions">
+                    <a href="{% url 'dashboard:group_children' g.pk %}" class="group-btn">View Subgroups</a>
+                    <a href="{% url 'dashboard:subgroup_form' g.pk %}" class="group-btn form-btn">Checklist</a>
+                    <a href="#" class="delete-btn" data-group-id="{{ g.pk }}">Delete</a>
                 </div>
-            {% endif %}
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <p>No {% if parent_pk %}subgroups{% else %}groups{% endif %} found</p>
+                <a href="{% if parent_pk %}{% url 'dashboard:group_add_child' parent_pk %}{% else %}{% url 'dashboard:group_add' %}{% endif %}" class="add-btn">
+                    + Add Your First {% if parent_pk %}Subgroup{% else %}Group{% endif %}
+                </a>
+            </div>
+            {% endfor %}
         </div>
-
-        {% if parent_pk %}
-        <div class="breadcrumbs">
-            <a href="{% url 'dashboard:group_list' %}" class="breadcrumb-item">Home</a>
-            <span class="breadcrumb-separator">›</span>
-            <span class="breadcrumb-item">Group {{ parent_pk }}</span>
-        </div>
-        {% endif %}
     </div>
 </div>
 
 <style>
-    /* Layout styles */
-    body, html {
+    :root {
+        --primary-color: #764ba2;
+        --secondary-color: #667eea;
+        --background-color: #f5f8fa;
+        --card-color: white;
+        --text-color: #333;
+        --border-color: #eaeaea;
+    }
+
+    body {
         margin: 0;
         padding: 0;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: #f5f7fa;
-        height: 100%;
+        background-color: var(--background-color);
+        color: var(--text-color);
     }
 
     .dashboard-container {
@@ -89,176 +86,179 @@
     /* Sidebar styles */
     .sidebar {
         width: 250px;
-        background: linear-gradient(180deg, #764ba2 0%, #667eea 100%);
+        background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
         color: white;
-        padding: 20px 0;
-        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        padding: 20px;
+        box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
     }
 
     .app-title {
         font-size: 24px;
-        font-weight: 600;
-        padding: 20px;
-        text-align: center;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
-        margin-bottom: 20px;
+        font-weight: bold;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .nav-links {
-        padding: 0 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
     }
 
     .nav-link {
         display: flex;
         align-items: center;
-        color: rgba(255,255,255,0.8);
-        padding: 12px 15px;
+        padding: 10px 15px;
+        border-radius: 8px;
         text-decoration: none;
-        border-radius: 5px;
-        margin-bottom: 5px;
+        color: rgba(255, 255, 255, 0.8);
         transition: all 0.3s;
     }
 
     .nav-link:hover, .nav-link.active {
-        background: rgba(255,255,255,0.1);
+        background-color: rgba(255, 255, 255, 0.1);
         color: white;
     }
 
     .icon {
         margin-right: 10px;
-        font-size: 18px;
     }
 
     /* Main content styles */
-    .content {
+    .main-content {
         flex: 1;
         padding: 30px;
     }
 
-    .header {
+    .header-section {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 30px;
     }
 
-    h2 {
-        color: #333;
+    h1 {
+        font-size: 28px;
+        font-weight: 600;
+        color: var(--text-color);
         margin: 0;
     }
 
-    /* Group styles */
-    .groups-container {
+    .add-btn {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+    .add-btn:hover {
+        background-color: var(--secondary-color);
+    }
+
+    /* Group card styles */
+    .group-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
         gap: 20px;
     }
 
     .group-card {
-        background: white;
+        background-color: var(--card-color);
         border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
         transition: transform 0.3s, box-shadow 0.3s;
     }
 
     .group-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     }
 
     .group-header {
+        padding: 20px;
+        border-bottom: 1px solid var(--border-color);
         display: flex;
         align-items: center;
-        margin-bottom: 15px;
     }
 
-    .group-title {
+    .group-header h3 {
+        margin: 0;
         font-size: 18px;
-        font-weight: 500;
-        color: #333;
+        color: var(--text-color);
+        flex: 1;
     }
 
     .group-actions {
         display: flex;
-        justify-content: flex-end;
-    }
-
-    /* Button styles */
-    .btn {
-        background: #764ba2;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        padding: 10px 15px;
-        font-size: 14px;
-        cursor: pointer;
-        text-decoration: none;
-        transition: background 0.3s;
-    }
-
-    .btn:hover {
-        background: #667eea;
+        border-top: 1px solid var(--border-color);
     }
 
     .group-btn {
-        background: #f0f2f5;
-        color: #555;
-        padding: 8px 12px;
-        border-radius: 5px;
+        flex: 1;
+        padding: 15px 10px;
+        text-align: center;
         text-decoration: none;
-        font-size: 14px;
-        transition: background 0.3s;
+        color: var(--text-color);
+        background-color: var(--card-color);
+        transition: background-color 0.3s;
     }
 
     .group-btn:hover {
-        background: #e4e6eb;
+        background-color: #f5f5f5;
     }
 
     .form-btn {
-        background: #764ba2;
-        color: white;
-        margin-left: 10px;
-    }
-
-    .form-btn:hover {
-        background: #667eea;
+        color: var(--primary-color);
+        font-weight: 500;
     }
 
     .delete-btn {
-        background: #ff4d4d;
-        color: white;
-        padding: 8px 12px;
-        border-radius: 5px;
+        flex: 0.5;
+        padding: 15px 10px;
+        text-align: center;
         text-decoration: none;
-        font-size: 14px;
-        transition: background 0.3s;
-        margin-left: 10px;
+        color: #ff4d4d;
+        background-color: var(--card-color);
+        transition: background-color 0.3s;
     }
 
     .delete-btn:hover {
-        background: #e60000;
+        background-color: #ffe6e6;
     }
 
-    .delete-selected {
-        color: #ff4d4d !important;
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 50px;
+        background-color: var(--card-color);
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     }
 
-    .delete-selected:hover {
-        background: rgba(255, 77, 77, 0.1);
+    .empty-state p {
+        font-size: 18px;
+        color: #777;
+        margin-bottom: 20px;
     }
 
     /* Checkbox styles */
     .checkbox-container {
+        display: block;
         position: relative;
         padding-left: 30px;
-        cursor: pointer;
         margin-right: 15px;
+        cursor: pointer;
+        user-select: none;
     }
 
     .checkbox-container input {
         position: absolute;
         opacity: 0;
+        cursor: pointer;
         height: 0;
         width: 0;
     }
@@ -278,7 +278,7 @@
     }
 
     .checkbox-container input:checked ~ .checkmark {
-        background-color: #764ba2;
+        background-color: var(--primary-color);
     }
 
     .checkmark:after {
@@ -301,126 +301,91 @@
         transform: rotate(45deg);
     }
 
-    /* Empty state styles */
-    .empty-state {
-        text-align: center;
-        padding: 50px 0;
-        grid-column: 1 / -1;
+    .delete-selected {
+        cursor: pointer;
+        opacity: 0.7;
     }
 
-    .empty-icon {
-        font-size: 48px;
-        margin-bottom: 20px;
-        color: #ccc;
+    .delete-selected:hover {
+        opacity: 1;
     }
 
-    /* Breadcrumbs styles */
-    .breadcrumbs {
-        margin-top: 30px;
-        color: #777;
-        font-size: 14px;
-    }
 
-    .breadcrumb-item {
-        color: #764ba2;
-        text-decoration: none;
-    }
+    .upload-btn {
+  background-color: #2196F3;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  transition: background-color 0.3s;
+}
 
-    .breadcrumb-separator {
-        margin: 0 5px;
-    }
+.upload-btn:hover {
+  background-color: #1976D2;
+}
 </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Store checked state between pages
-        const checkboxes = document.querySelectorAll('.group-checkbox');
-
-        // Load checked state from localStorage
-        checkboxes.forEach(checkbox => {
-            const groupId = checkbox.getAttribute('data-group-id');
-            const isChecked = localStorage.getItem('group_' + groupId) === 'true';
-            checkbox.checked = isChecked;
-
-            // Add change event listener
-            checkbox.addEventListener('change', function() {
-                localStorage.setItem('group_' + groupId, this.checked);
-            });
-        });
-
-        // Individual delete buttons
+        // Delete single group
         const deleteButtons = document.querySelectorAll('.delete-btn');
         deleteButtons.forEach(button => {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
                 const groupId = this.getAttribute('data-group-id');
+
                 if (confirm('Are you sure you want to delete this group?')) {
-                    deleteGroup(groupId);
+                    fetch(`/dashboard/group/${groupId}/delete/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.reload();
+                        } else {
+                            alert('Failed to delete the group');
+                        }
+                    });
                 }
             });
         });
 
         // Delete selected groups
-        const deleteSelectedBtn = document.getElementById('delete-selected');
-        if (deleteSelectedBtn) {
-            deleteSelectedBtn.addEventListener('click', function(e) {
+        const deleteSelectedButton = document.getElementById('delete-selected');
+        if (deleteSelectedButton) {
+            deleteSelectedButton.addEventListener('click', function(e) {
                 e.preventDefault();
 
-                const selectedGroups = [];
-                checkboxes.forEach(checkbox => {
-                    if (checkbox.checked) {
-                        selectedGroups.push(checkbox.getAttribute('data-group-id'));
-                    }
-                });
-
+                const selectedGroups = document.querySelectorAll('.group-checkbox:checked');
                 if (selectedGroups.length === 0) {
                     alert('Please select at least one group to delete');
                     return;
                 }
 
-                if (confirm('Are you sure you want to delete ' + selectedGroups.length + ' selected group(s)?')) {
-                    deleteMultipleGroups(selectedGroups);
-                }
-            });
-        }
+                if (confirm(`Are you sure you want to delete ${selectedGroups.length} selected group(s)?`)) {
+                    const groupIds = Array.from(selectedGroups).map(checkbox => checkbox.getAttribute('data-group-id'));
 
-        // Function to delete a single group
-        function deleteGroup(groupId) {
-            fetch('/dashboard/group/' + groupId + '/delete/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
-                }
-            })
-            .then(response => {
-                if (response.ok) {
-                    localStorage.removeItem('group_' + groupId);
-                    window.location.reload();
-                } else {
-                    alert('Failed to delete the group');
-                }
-            });
-        }
-
-        // Function to delete multiple groups
-        function deleteMultipleGroups(groupIds) {
-            fetch('/dashboard/groups/delete/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
-                },
-                body: JSON.stringify({group_ids: groupIds})
-            })
-            .then(response => {
-                if (response.ok) {
-                    groupIds.forEach(id => {
-                        localStorage.removeItem('group_' + id);
+                    fetch('/dashboard/groups/delete/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: JSON.stringify({ group_ids: groupIds })
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.reload();
+                        } else {
+                            alert('Failed to delete selected groups');
+                        }
                     });
-                    window.location.reload();
-                } else {
-                    alert('Failed to delete some or all groups');
                 }
             });
         }
@@ -441,5 +406,6 @@
             return cookieValue;
         }
     });
+
 </script>
 {% endblock %}

@@ -2,29 +2,30 @@
 {% block content %}
 <div class="form-container">
   <h2>{{ group.title }}</h2>
-  
+
   <div class="form-card">
     <form method="POST" id="subgroup-form">
       {% csrf_token %}
-      
+
       <div class="question-list">
-        <div class="question-item">
-          <h3>What is your assessment of this subgroup?</h3>
-          <input type="text" name="assessment" class="form-field" placeholder="Your answer">
-        </div>
-        
-        <div class="question-item">
-          <h3>How would you rate the effectiveness? (1-10)</h3>
-          <input type="number" name="rating" min="1" max="10" class="form-field" placeholder="Rating">
-        </div>
-        
-        <div class="question-item">
-          <h3>Additional comments</h3>
-          <textarea name="comments" class="form-field textarea" placeholder="Your comments"></textarea>
-        </div>
+        {% if questions %}
+          {% for question in questions %}
+            <div class="question-item">
+              <h3>{{ question.question_text }}</h3>
+              <textarea name="question_{{ question.id }}" class="form-field textarea" placeholder="Your answer"></textarea>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state">
+            <p>No checklist questions have been defined yet.</p>
+            <a href="{% url 'dashboard:checklist_settings' %}" class="link-btn">Configure Checklist Settings</a>
+          </div>
+        {% endif %}
       </div>
-      
-      <button type="submit" class="submit-btn">Submit</button>
+
+      {% if questions %}
+        <button type="submit" class="submit-btn">Submit Responses</button>
+      {% endif %}
     </form>
   </div>
 </div>
@@ -37,12 +38,23 @@
 </div>
 
 <style>
+  :root {
+    --primary-color: #764ba2;
+    --secondary-color: #667eea;
+  }
+
   /* Form container styles */
   .form-container {
     max-width: 800px;
     margin: 0 auto;
+    padding: 30px;
   }
-  
+
+  h2 {
+    margin-bottom: 20px;
+    color: #333;
+  }
+
   .form-card {
     background-color: white;
     border-radius: 8px;
@@ -50,26 +62,26 @@
     padding: 30px;
     margin-top: 20px;
   }
-  
+
   /* Question styles */
   .question-list {
     display: flex;
     flex-direction: column;
     gap: 30px;
   }
-  
+
   .question-item {
     border-bottom: 1px solid #eee;
     padding-bottom: 20px;
   }
-  
+
   .question-item h3 {
     font-size: 18px;
     font-weight: 500;
     margin-bottom: 15px;
     color: #333;
   }
-  
+
   /* Form field styles */
   .form-field {
     width: 100%;
@@ -79,17 +91,17 @@
     font-size: 16px;
     transition: border 0.3s;
   }
-  
+
   .form-field:focus {
     border-color: var(--primary-color);
     outline: none;
   }
-  
+
   .textarea {
     min-height: 120px;
     resize: vertical;
   }
-  
+
   /* Button styles */
   .submit-btn {
     background-color: var(--primary-color);
@@ -102,11 +114,11 @@
     margin-top: 30px;
     transition: background 0.3s;
   }
-  
+
   .submit-btn:hover {
     background-color: var(--secondary-color);
   }
-  
+
   /* Popup styles */
   .popup {
     display: none;
@@ -118,7 +130,7 @@
     background-color: rgba(0,0,0,0.5);
     z-index: 1000;
   }
-  
+
   .popup-content {
     background-color: white;
     margin: 15% auto;
@@ -129,13 +141,28 @@
     text-align: center;
     position: relative;
   }
-  
+
   .close-btn {
     position: absolute;
     top: 10px;
     right: 15px;
     font-size: 24px;
     cursor: pointer;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 30px 0;
+  }
+
+  .link-btn {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 4px;
+    text-decoration: none;
+    margin-top: 15px;
   }
 </style>
 
@@ -144,39 +171,43 @@
     const form = document.getElementById('subgroup-form');
     const popup = document.getElementById('success-popup');
     const closeBtn = document.querySelector('.close-btn');
-    
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      // Create form data for submission
-      const formData = new FormData(form);
-      
-      // Submit using fetch API
-      fetch('{% url "dashboard:save_subgroup_responses" group.id %}', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-        },
-        credentials: 'same-origin'
-      })
-      .then(response => {
-        if (response.ok) {
-          // Show success popup
-          popup.style.display = 'block';
-          // Reset form
-          form.reset();
-        } else {
-          alert('There was an error submitting your response. Please try again.');
-        }
+
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Create form data for submission
+        const formData = new FormData(form);
+
+        // Submit using fetch API
+        fetch('{% url "dashboard:save_subgroup_responses" group.id %}', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+          },
+          credentials: 'same-origin'
+        })
+        .then(response => {
+          if (response.ok) {
+            // Show success popup
+            popup.style.display = 'block';
+            // Reset form
+            form.reset();
+          } else {
+            alert('There was an error submitting your response. Please try again.');
+          }
+        });
       });
-    });
-    
+    }
+
     // Close popup when clicking X
-    closeBtn.addEventListener('click', function() {
-      popup.style.display = 'none';
-    });
-    
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function() {
+        popup.style.display = 'none';
+      });
+    }
+
     // Close popup when clicking outside
     window.addEventListener('click', function(e) {
       if (e.target === popup) {

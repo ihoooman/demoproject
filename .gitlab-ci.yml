@@ -1,0 +1,77 @@
+# GitLab CI/CD Pipeline for Django Project
+
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  DOCKER_IMAGE: $CI_REGISTRY_IMAGE
+  DOCKER_TAG: $CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
+  POSTGRES_DB: test_db
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: 5432
+  DATABASE_URL: "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB"
+  DJANGO_SETTINGS_MODULE: LastDjangoProject.settings
+  SECRET_KEY: "django-insecure-ci-test-key-not-for-production"
+  ALLOWED_HOSTS: "localhost,127.0.0.1"
+  # Add other environment variables as needed
+  # For production, use GitLab CI/CD variables instead of hardcoding sensitive values
+
+# Test stage
+test:
+  stage: test
+  image: python:3.11-slim
+  services:
+    - name: postgres:14
+      alias: postgres
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .pip-cache/
+  before_script:
+    - apt-get update && apt-get install -y gcc
+    - pip install --cache-dir=.pip-cache --no-cache-dir -r requirements.txt
+  script:
+    - python manage.py migrate
+    - pytest
+  only:
+    - main
+    - merge_requests
+    - checklist
+
+# Build stage
+build:
+  stage: build
+  image: docker:20.10.16
+  services:
+    - docker:20.10.16-dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  script:
+    # حالا فقط یک ':' بین اسم و تگ داریم
+    - docker build -t "$DOCKER_IMAGE:$DOCKER_TAG" .
+    - docker push "$DOCKER_IMAGE:$DOCKER_TAG"
+    - if [ "$CI_COMMIT_REF_NAME" = "main" ]; then
+        docker tag "$DOCKER_IMAGE:$DOCKER_TAG" "$DOCKER_IMAGE:latest";
+        docker push "$DOCKER_IMAGE:latest";
+      fi
+  only:
+    - main
+    - checklist
+    - tags
+
+deploy:
+  stage: deploy
+  image: curlimages/curl:latest
+  only:
+    - main
+  environment:
+    name: production
+    url: https://demoproject-production-6b92.up.railway.app
+  script:
+    - |
+      curl -X POST \
+        "https://api.render.com/deploy/srv-d0mr2hmuk2gs73ftku70?key=cK_u2MIEFl4"
