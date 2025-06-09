@@ -36,6 +36,16 @@ class ChecklistQuestion(models.Model):
     order = models.PositiveIntegerField(default=0)
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True,
+                              related_name='checklist_questions')
+    # Add this new field
+    subgroup = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True,
+                                related_name='subgroup_checklist_questions')
+    SYSTEM_CHOICES = [
+        ('yes', 'Yes'),
+        ('no', 'No'),
+    ]
+    active_system = models.CharField(max_length=5, choices=SYSTEM_CHOICES)
 
     class Meta:
         ordering = ['order']
@@ -43,6 +53,11 @@ class ChecklistQuestion(models.Model):
     def __str__(self):
         return self.question_text
 
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return self.question_text
 
 class SubcategoryResponse(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

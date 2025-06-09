@@ -17,6 +17,7 @@ from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .forms import ImageUploadForm
+from django.db.models import Q
 
 
 class GroupListView(LoginRequiredMixin, ListView):
@@ -81,10 +82,21 @@ class SubgroupFormView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['questions'] = ChecklistQuestion.objects.filter(active=True)
+        group = self.get_object()
+
+        # Get questions that are:
+        # 1. Global (no group specified)
+        # 2. For this subgroup's parent group (with no specific subgroup)
+        # 3. Specifically for this subgroup
+        context['questions'] = ChecklistQuestion.objects.filter(
+            Q(active=True) & (
+                    Q(group__isnull=True) |  # Global questions
+                    Q(group=group.parent, subgroup__isnull=True) |  # Questions for parent with no specific subgroup
+                    Q(subgroup=group)  # Questions specifically for this subgroup
+            )
+        ).order_by('order')
+
         return context
-
-
 class ChecklistSettingsView(LoginRequiredMixin, ListView):
     model = ChecklistQuestion
     template_name = 'dashboard/checklist_settings.html'
@@ -98,6 +110,10 @@ class ChecklistQuestionCreateView(LoginRequiredMixin, CreateView):
     template_name = 'dashboard/checklist_question_form.html'
     success_url = reverse_lazy('dashboard:checklist_settings')
     login_url = 'accounts:login'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['groups'] = Group.objects.all()
+        return context
 
 
 class ChecklistQuestionUpdateView(LoginRequiredMixin, UpdateView):

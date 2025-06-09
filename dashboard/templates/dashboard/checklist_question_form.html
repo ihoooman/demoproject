@@ -3,27 +3,51 @@
 <div class="form-container">
     <div class="card">
         <h2>{% if form.instance.pk %}Edit Question{% else %}Add New Question{% endif %}</h2>
-        
+
         <form method="post">
             {% csrf_token %}
-            
             <div class="form-group">
                 <label for="{{ form.question_text.id_for_label }}">Question Text</label>
                 {{ form.question_text }}
+                <small class="help-text">Enter the text of the checklist question.</small>
             </div>
-            
+
+            <div class="form-group">
+                <label for="{{ form.group.id_for_label }}">Apply to Group</label>
+                {{ form.group }}
+                <small class="help-text">Select which main group this question applies to.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.subgroup.id_for_label }}">Apply to Subgroup</label>
+                {{ form.subgroup }}
+                <small class="help-text">Select which specific subgroup this question applies to.</small>
+            </div>
+
+            <div class="form-group">
+                <label>System Active</label>
+                <div class="radio-options">
+                    {% for radio in form.active_system %}
+                    <div class="radio-option">
+                        {{ radio.tag }}
+                        <label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
             <div class="form-group">
                 <label for="{{ form.order.id_for_label }}">Display Order</label>
                 {{ form.order }}
             </div>
-            
+
             <div class="form-group checkbox-group">
                 <label for="{{ form.active.id_for_label }}">
                     {{ form.active }}
                     Active
                 </label>
             </div>
-            
+
             <div class="button-group">
                 <button type="submit" class="submit-btn">Save Question</button>
                 <a href="{% url 'dashboard:checklist_settings' %}" class="cancel-btn">Cancel</a>
@@ -34,63 +58,87 @@
 
 <style>
     .form-container {
-        max-width: 600px;
+        max-width: 800px;
         margin: 0 auto;
         padding: 30px;
     }
-    
+
     .card {
         background-color: white;
         border-radius: 8px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         padding: 30px;
     }
-    
+
     h2 {
+        margin-top: 0;
         margin-bottom: 30px;
         color: #333;
     }
-    
+
     .form-group {
         margin-bottom: 20px;
     }
-    
+
     label {
         display: block;
         margin-bottom: 8px;
         font-weight: 500;
-        color: #555;
+        color: #444;
     }
-    
-    .form-field {
+
+    input, select, textarea {
         width: 100%;
-        padding: 12px;
+        padding: 10px;
         border: 1px solid #ddd;
         border-radius: 4px;
         font-size: 16px;
     }
-    
+
+    .help-text {
+        display: block;
+        margin-top: 5px;
+        font-size: 14px;
+        color: #666;
+    }
+
+    .radio-options {
+        display: flex;
+        gap: 20px;
+    }
+
+    .radio-option {
+        display: flex;
+        align-items: center;
+    }
+
+    .radio-option input[type="radio"] {
+        width: auto;
+        margin-right: 8px;
+    }
+
     .checkbox-group {
         display: flex;
         align-items: center;
     }
-    
+
     .checkbox-group label {
         display: flex;
         align-items: center;
         cursor: pointer;
     }
-    
+
     .checkbox-group input[type="checkbox"] {
-        margin-right: 10px;
+        width: auto;
+        margin-right: 8px;
     }
-    
+
     .button-group {
         display: flex;
         gap: 15px;
         margin-top: 30px;
     }
-    
+
     .submit-btn {
         background-color: #764ba2;
         color: white;
@@ -98,16 +146,20 @@
         padding: 12px 20px;
         border-radius: 4px;
         cursor: pointer;
+        font-size: 16px;
     }
-    
+
     .cancel-btn {
         background-color: #f5f5f5;
-        color: #555;
+        color: #333;
         border: 1px solid #ddd;
         padding: 12px 20px;
         border-radius: 4px;
         text-decoration: none;
-        text-align: center;
+        font-size: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 </style>
 {% endblock %}
