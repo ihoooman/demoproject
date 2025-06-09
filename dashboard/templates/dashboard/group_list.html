@@ -29,8 +29,12 @@
             <a href="{% if parent_pk %}{% url 'dashboard:group_add_child' parent_pk %}{% else %}{% url 'dashboard:group_add' %}{% endif %}" class="add-btn">
                 + Add {% if parent_pk %}Subgroup{% else %}Group{% endif %}
             </a>
+            {% if parent_pk %}
+    <a href="{% url 'dashboard:checklist_question_add' %}?subgroup={{ parent_pk }}" class="add-btn">+ New Question</a>
+    {% endif %}
             <a href="{% url 'dashboard:upload_center' %}" class="upload-btn">Upload Center</a>
         </div>
+
 
         <div class="group-grid">
             {% for g in groups %}
