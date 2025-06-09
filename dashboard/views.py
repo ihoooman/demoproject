@@ -1,5 +1,4 @@
 import json
-from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
@@ -7,16 +6,11 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, FormView
 from .models import Group, Subcategory, Category, Response, ChecklistQuestion
-from django.contrib import messages
-from .forms import * # Add CategoryForm here
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
 from .models import *
 from .forms import *
 from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .forms import ImageUploadForm
 from django.db.models import Q
 
 
@@ -153,7 +147,6 @@ def save_responses(request, category_id):
     if request.method == 'POST':
         for key, value in request.POST.items():
             if key.startswith('q_') and value.strip():
-                # Format: q_questionNumber_subcategoryId
                 parts = key.split('_')
                 if len(parts) == 3:
                     question_num = parts[1]
@@ -181,7 +174,6 @@ def save_subgroup_responses(request, group_id):
         # Save responses for each question
         for key, value in request.POST.items():
             if key.startswith('question_') and value.strip():
-                # Format: question_id
                 question_id = key.split('_')[1]
                 question = get_object_or_404(ChecklistQuestion, pk=question_id)
 
