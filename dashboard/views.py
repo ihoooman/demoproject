@@ -1,6 +1,6 @@
 import json
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse_lazy
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
@@ -91,12 +91,25 @@ class SubgroupFormView(LoginRequiredMixin, DetailView):
         ).order_by('order')
 
         return context
+
+
+# class ChecklistSettingsView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+#     model = ChecklistQuestion
+#     template_name = 'dashboard/checklist_settings.html'
+#     context_object_name = 'questions'
+#     login_url = 'accounts:login'
+#     permission_required = 'dashboard.manage_checklist_settings'
 class ChecklistSettingsView(LoginRequiredMixin, ListView):
     model = ChecklistQuestion
     template_name = 'dashboard/checklist_settings.html'
     context_object_name = 'questions'
     login_url = 'accounts:login'
 
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('dashboard.manage_checklist_settings'):
+            messages.error(request, "You don't have permission to access this page.")
+            return redirect('dashboard:categories')
+        return super().dispatch(request, *args, **kwargs)
 
 class ChecklistQuestionCreateView(LoginRequiredMixin, CreateView):
     model = ChecklistQuestion
@@ -104,6 +117,7 @@ class ChecklistQuestionCreateView(LoginRequiredMixin, CreateView):
     template_name = 'dashboard/checklist_question_form.html'
     success_url = reverse_lazy('dashboard:checklist_settings')
     login_url = 'accounts:login'
+    permission_required = 'dashboard.manage_checklist_settings'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['groups'] = Group.objects.all()
@@ -116,9 +130,12 @@ class ChecklistQuestionUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'dashboard/checklist_question_form.html'
     success_url = reverse_lazy('dashboard:checklist_settings')
     login_url = 'accounts:login'
+    permission_required = 'dashboard.manage_checklist_settings'
+
 
 
 @login_required
+@permission_required('dashboard.manage_checklist_settings')
 @require_POST
 def delete_group(request, pk):
     try:

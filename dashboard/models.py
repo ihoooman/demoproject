@@ -59,6 +59,11 @@ class ChecklistQuestion(models.Model):
     def __str__(self):
         return self.question_text
 
+    class Meta:
+        permissions = [
+            ("manage_checklist_settings", "Can manage checklist settings"),
+        ]
+
 class SubcategoryResponse(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE)

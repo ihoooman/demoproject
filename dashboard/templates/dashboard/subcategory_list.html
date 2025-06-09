@@ -11,16 +11,16 @@
     <a href="#" class="add-btn">+ Add Subcategory</a>
   </div>
 
-  {% if messages %}
-  <div class="messages">
-    {% for message in messages %}
-      <div class="message-box {% if message.tags %}{{ message.tags }}{% endif %}">
-        {{ message }}
-        <span class="message-icon {% if message.tags %}{{ message.tags }}-icon{% endif %}"></span>
-      </div>
-    {% endfor %}
-  </div>
-  {% endif %}
+{% if messages %}
+<div class="messages">
+  {% for message in messages %}
+    <div class="message-box {% if message.tags %}{{ message.tags }}{% endif %}">
+      {{ message }}
+      <span class="message-icon {% if message.tags %}{{ message.tags }}-icon{% endif %}"></span>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
 
   <div class="subcategory-list">
     {% if subcategories %}
