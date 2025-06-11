@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'rest_framework',
 
 ]
 
@@ -191,7 +192,17 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+}
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
 ACCOUNT_EMAIL_REQUIRED = True
@@ -206,8 +217,8 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = 'accounts:login'
 AUTH_USER_MODEL = 'accounts.CustomUser'
 CACHES = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}}
-KAVENEGAR_API_KEY = '6B533653785957676E636938795A4A4F5945396A64304E553861736752743976352F464F7951725A666F6B3D'
-KAVENEGAR_SENDER = '2000660110'
+KAVENEGAR_API_KEY = os.environ.get('KAVENEGAR_API_KEY', '')
+KAVENEGAR_SENDER = os.environ.get('KAVENEGAR_SENDER', '')
 GOOGLE_CLIENT_ID = '848254333062-1bpjif2lc86m7saggrsaflfanbtnvo8j.apps.googleusercontent.com'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

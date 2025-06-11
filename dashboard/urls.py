@@ -54,6 +54,8 @@ urlpatterns = [
     path('upload-image/', views.upload_image, name='upload_image'),
     path('delete-image/<int:pk>/', views.delete_image, name='delete_image'),
 
+    path('api/', include('dashboard.api_urls')),
+
 ]
 
 
