@@ -110,9 +110,15 @@ This project is a powerful Django-based application for user management, survey,
    * Copy `.env.example` to `.env` and update keys:
 
      ```env
-     SECRET_KEY=your_secret_key
-     KAVENEGAR_API_KEY=your_api_key
-     LOWERCASE_DOMAIN=yourdomain.com
+     DATABASE_URL=postgres://user:password@localhost:5432/database_name
+     DEBUG=False
+     KAVENEGAR_API_KEY=your_kavenegar_api_key_here
+     KAVENEGAR_SENDER=your_kavenegar_sender_number_here
+     SECRET_KEY=your_django_secret_key_here
+     ALLOWED_HOSTS=localhost,127.0.0.1,your-domain.com
+     GOOGLE_CLIENT_ID=your_google_client_id_here
+     GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+     
      ```
 5. **Apply database migrations**
 
