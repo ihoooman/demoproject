@@ -35,8 +35,14 @@ class ChecklistQuestionSerializer(serializers.ModelSerializer):
 
 class ResponseSerializer(serializers.ModelSerializer):
     username = serializers.ReadOnlyField(source='user.username')
+    file_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Response
         fields = ['id', 'user', 'username', 'question', 'answer', 'group',
-                  'subcategory', 'created_at']
+                  'subcategory', 'created_at', 'file', 'file_url']
+
+    def get_file_url(self, obj):
+        if obj.file:
+            return self.context['request'].build_absolute_uri(obj.file.url)
+        return None

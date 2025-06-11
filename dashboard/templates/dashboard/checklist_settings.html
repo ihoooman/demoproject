@@ -13,6 +13,7 @@
                     <thead>
                         <tr>
                             <th>Question</th>
+                            <th>Type</th>
                             <th>Order</th>
                             <th>Group</th>
                             <th>Subgroup</th>
@@ -25,6 +26,7 @@
                         {% for question in questions %}
                         <tr>
                             <td>{{ question.question_text }}</td>
+                            <td>{{ question.get_question_type_display }}</td>
                             <td>{{ question.order }}</td>
                             <td>{% if question.group %}{{ question.group.title }}{% else %}All Groups{% endif %}</td>
                             <td>{% if question.subgroup %}{{ question.subgroup.title }}{% else %}-{% endif %}</td>

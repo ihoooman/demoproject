@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load file_tags %}
 {% block content %}
 <div class="upload-container">
   <div class="header">
@@ -35,6 +36,43 @@
     </div>
   </div>
 
+  <!-- Responses Files Section -->
+  <div class="responses-section">
+    <h3>Uploaded Files</h3>
+    {% if responses %}
+    <div class="files-grid">
+      {% for response in responses %}
+      <div class="file-card">
+        <div class="file-info">
+          <div class="file-icon">
+            {% if response.file.name|lower|slice:"-4:" == '.pdf' %}📄
+            {% elif response.file.name|lower|slice:"-4:" == '.doc' or response.file.name|lower|slice:"-5:" == '.docx' %}📝
+            {% elif response.file.name|lower|slice:"-4:" == '.xls' or response.file.name|lower|slice:"-5:" == '.xlsx' %}📊
+            {% else %}📁{% endif %}
+          </div>
+          <div class="file-details">
+            <h4>{{ response.file.name|cut:"responses/"|default:response.file.name }}</h4>
+            <p>{{ response.question }}</p>
+            <p class="file-meta">
+              <span>Uploaded by: {{ response.user.username }}</span>
+              <time datetime="{{ response.created_at|date:'c' }}" class="uploaded-at">{{ response.created_at }}</time>
+            </p>
+          </div>
+        </div>
+        <div class="file-actions">
+          <a href="{{ response.file.url }}" class="download-btn" download>Download</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon"></div>
+      <p>No files have been uploaded yet.</p>
+    </div>
+    {% endif %}
+  </div>
+
   <div class="images-section">
     <h3>Your Images</h3>
     {% if images %}
@@ -46,8 +84,8 @@
             </div>
             <div class="image-info">
               <h4>{{ image.title }}</h4>
-                <time class="uploaded-at" datetime="{{ image.uploaded_at|date:"c" }}">
-                در حال بارگذاری...
+              <time class="uploaded-at" datetime="{{ image.uploaded_at|date:'c' }}">
+                Loading...
               </time>
             </div>
             <div class="image-actions">
@@ -157,6 +195,81 @@
     background-color: #633d8c;
   }
 
+  /* File section styling */
+  .responses-section {
+    margin-bottom: 40px;
+  }
+
+  .responses-section h3 {
+    margin-bottom: 20px;
+    font-size: 20px;
+    color: #333;
+  }
+
+  .files-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .file-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .file-info {
+    display: flex;
+    gap: 15px;
+  }
+
+  .file-icon {
+    font-size: 24px;
+    color: #764ba2;
+  }
+
+  .file-details h4 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+  }
+
+  .file-details p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+  }
+
+  .file-meta {
+    font-size: 12px;
+    margin-top: 10px !important;
+    color: #888 !important;
+  }
+
+  .file-actions {
+    margin-top: 15px;
+  }
+
+  .download-btn {
+    display: inline-block;
+    background-color: #764ba2;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  /* Images section styling */
+  .images-section {
+    margin-bottom: 40px;
+  }
+
   .images-section h3 {
     margin-bottom: 20px;
     font-size: 20px;
@@ -200,12 +313,6 @@
   .image-info h4 {
     margin: 0 0 5px 0;
     font-size: 16px;
-  }
-
-  .image-info p {
-    margin: 0;
-    color: #666;
-    font-size: 14px;
   }
 
   .image-actions {
@@ -265,14 +372,38 @@
     margin-bottom: 20px;
     font-size: 16px;
   }
+
+  /* Message styles */
+  .messages {
+    margin-bottom: 20px;
+  }
+
+  .message-box {
+    padding: 12px 15px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  .error {
+    background-color: #ffebee;
+    color: #c62828;
+  }
 </style>
-    <script>
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('time.uploaded-at').forEach(function(tag){
-    const iso = tag.getAttribute('datetime');
-    const date = new Date(iso);
-    tag.textContent = date.toLocaleString();
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('time.uploaded-at').forEach(function(tag){
+      const iso = tag.getAttribute('datetime');
+      const date = new Date(iso);
+      tag.textContent = date.toLocaleString();
+    });
   });
-});
 </script>
 {% endblock %}

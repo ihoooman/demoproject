@@ -32,7 +32,13 @@ class Subcategory(models.Model):
 
 
 class ChecklistQuestion(models.Model):
+    QUESTION_TYPES = (
+        ('TEXT', 'Text Response'),
+        ('FILE', 'File Upload'),
+    )
+
     question_text = models.CharField(max_length=255)
+    question_type = models.CharField(max_length=10, choices=QUESTION_TYPES, default='TEXT')
     order = models.PositiveIntegerField(default=0)
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -80,9 +86,9 @@ class Response(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='responses', null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     question = models.CharField(max_length=255)
-    answer = models.TextField()
+    answer = models.TextField(blank=True)
+    file = models.FileField(upload_to='responses/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
 
     def __str__(self):
         return f"{self.user.username}'s response for {self.question}"

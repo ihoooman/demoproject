@@ -18,7 +18,7 @@ class SubcategoryForm(forms.ModelForm):
 class ChecklistQuestionForm(forms.ModelForm):
     class Meta:
         model = ChecklistQuestion
-        fields = ['question_text', 'group', 'subgroup', 'active_system', 'active', 'order']
+        fields = ['question_text', 'question_type', 'order', 'active', 'active_system', 'group', 'subgroup']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

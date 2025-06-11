@@ -189,7 +189,7 @@ def save_subgroup_responses(request, group_id):
     if request.method == 'POST':
         group = get_object_or_404(Group, pk=group_id)
 
-        # Save responses for each question
+        # Save text responses
         for key, value in request.POST.items():
             if key.startswith('question_') and value.strip():
                 question_id = key.split('_')[1]
@@ -202,10 +202,25 @@ def save_subgroup_responses(request, group_id):
                     answer=value
                 )
 
-        return JsonResponse({'status': 'success'})
+        # Save file uploads
+        for key, file in request.FILES.items():
+            if key.startswith('file_question_'):
+                question_id = key.split('_')[2]
+                question = get_object_or_404(ChecklistQuestion, pk=question_id)
+
+                response = Response.objects.create(
+                    user=request.user,
+                    group=group,
+                    question=question.question_text,
+                    answer=f"File uploaded: {file.name}"
+                )
+                response.file = file
+                response.save()
+
+        # Return JSON response instead of redirect
+        return JsonResponse({'status': 'success', 'message': 'Your responses have been saved successfully!'})
 
     return JsonResponse({'status': 'error'}, status=400)
-
 
 @login_required
 @require_POST
@@ -316,9 +331,13 @@ def subcategory_delete(request, pk):
 class UploadCenterView(View):
     def get(self, request):
         images = UploadedImage.objects.all().order_by('-uploaded_at')
+        responses = Response.objects.filter(file__isnull=False).order_by('-created_at')
         form = ImageUploadForm()
-        return render(request, 'dashboard/upload_center.html', {'images': images, 'form': form})
-
+        return render(request, 'dashboard/upload_center.html', {
+            'images': images,
+            'responses': responses,
+            'form': form
+        })
 def upload_image(request):
     if request.method == 'POST':
         form = ImageUploadForm(request.POST, request.FILES)

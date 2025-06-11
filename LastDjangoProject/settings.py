@@ -97,6 +97,7 @@ TEMPLATES = [
 
 ]
 
+
 WSGI_APPLICATION = 'LastDjangoProject.wsgi.application'
 
 
