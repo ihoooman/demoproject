@@ -6,6 +6,7 @@ cryptography==45.0.3
 dj-database-url==3.0.0
 Django==5.2.2
 django-allauth==65.9.0
+djangorestframework==3.16.0
 gunicorn==23.0.0
 idna==3.10
 iniconfig==2.1.0
