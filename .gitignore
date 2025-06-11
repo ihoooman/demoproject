@@ -6,6 +6,7 @@ __pycache__/
 local_settings.py
 db.sqlite3-journal
 media
+uploads
 db.sqlite3
 venv/
 pip-wheel-metadata/
