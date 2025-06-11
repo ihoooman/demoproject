@@ -23,17 +23,17 @@
 
 ## 🚀 Overview
 
-The **Survey Management System** is designed to help organizations build flexible, hierarchical survey structures and gather insights efficiently. This demo project showcases best practices in Django application design, authentication, API integration, and user-friendly dashboards.
+This project is a powerful Django-based application for user management, survey, and assessment. It enables you to build hierarchical groups, categories, subcategories, organize questions, collect responses, and efficiently manage user access. It comes with custom authentication, flexible upload center, a modern dashboard, and robust CI/CD integration.
 
 ---
 
-## 🎯 Key Features
+## ✨ Key Features
 
-* **User Authentication**
-
-  * Custom user model supporting email and phone number
-  * Social login via Google OAuth (django-allauth)
-  * Phone verification with SMS (Kavenegar API)
+- **Advanced Authentication**
+  - Custom user model (supports both email and phone)
+  - Google OAuth login (django-allauth)
+  - Phone verification using Kavenegar SMS API
+  - User activation and multi-factor authentication
 
 * **Upload Center**
   * Upload center for images and media files
@@ -47,17 +47,28 @@ The **Survey Management System** is designed to help organizations build flexibl
   * Organize content into categories and nested subcategories
   * Adaptable structure for quizzes, polls, and assessments
 
-* **Response Collection**
+- **Survey & Response Management**
+  
+  - Create multiple types of questions (checklist, multiple choice, etc.)
+  - Store and filter responses by user, group, category, subcategory
+  - Export responses for reporting and analytics
 
-  * Record and store user answers to various question types
-  * Filter and track responses by user, group, category, and subcategory
-  * Exportable data for reporting and analysis
 
 * **Dashboard Interface**
 
   * Intuitive UI for browsing hierarchy and managing content
   * Dynamic forms for submitting survey responses
   * Admin views for bulk operations and content moderation
+
+- **Powerful API**
+   
+  - RESTful API built with Django REST Framework (DRF)
+  - Ready endpoints for groups, categories, questions, and responses
+  - Modular and clean codebase for easy extension
+
+- **CI/CD & Deployment**
+  - Fully automated deployment to Railway via GitHub Actions
+  - Automated testing and code quality checks on each push
 
 ---
 
@@ -68,7 +79,9 @@ The **Survey Management System** is designed to help organizations build flexibl
 | **Backend**        | Django 5.2.1, Python 3.x, PostgreSQL          |
 | **Authentication** | django-allauth, custom phone auth             |
 | **Frontend**       | Django Templates, HTML5, CSS3, JavaScript     |
-| **APIs**           | Google OAuth REST API, Kavenegar SMS API<br/> |
+| **APIs**        | Django REST Framework, Google OAuth, Kavenegar SMS API |
+| **DevOps**      | Docker, Docker Compose, Railway, GitHub Actions |
+
 
 ---
 
@@ -86,6 +99,7 @@ The **Survey Management System** is designed to help organizations build flexibl
    python3 -m venv venv
    source venv/bin/activate
    ```
+      
 3. **Install dependencies**
 
    ```bash
@@ -212,14 +226,14 @@ The deployment workflow automatically triggers a rebuild on Render when changes 
 
 ## 📂 Project Structure
 
+
 ```plaintext
-survey-management-system/
+demoproject/
 ├── LICENSE
 ├── README.md
 ├── requirements.txt
 ├── .env.example
 ├── manage.py
-├── .gitignore
 ├── project/
 │   ├── settings.py
 │   ├── urls.py
@@ -235,13 +249,12 @@ survey-management-system/
 │   ├── tests.py
 │   └── templates/
 │       └── dashboard/
-│           ├── group_list.html
-│           └── subcategory_list.html
 ├── login/
 │   └── utils.py
-└── screenshots/
-    └── demo.png
-  ```
+├── screenshots/
+│   └── demo.png
+```
+
 ---
 
 ## 🤝 Contributing
@@ -261,6 +274,18 @@ Contributions are welcome! Please:
 This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for details.
 
 ---
+
+
+## 📌 Latest Commit
+
+- **SHA:** [`20aeb115`](https://github.com/ihoooman/demoproject/commit/20aeb115918c96a338a1666dab9891a9d9d03e7a)
+- **Author:** Hooman Maddah ([ihoooman](https://github.com/ihoooman))
+- **Date:** 2025-06-11 11:01 UTC
+- **Message:** Add djangorestframework version 3.16.0 to requirements.txt
+
+---
+
+Thank you for using and contributing! 🌟
 
 ## 🙋‍♂️ Contact & Showcase
 
