@@ -93,6 +93,7 @@ class SubgroupFormView(LoginRequiredMixin, DetailView):
         return context
 
 
+
 # class ChecklistSettingsView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 #     model = ChecklistQuestion
 #     template_name = 'dashboard/checklist_settings.html'
