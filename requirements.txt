@@ -16,11 +16,11 @@ pillow==11.2.1
 pluggy==1.6.0
 psycopg2-binary==2.9.10
 pycparser==2.22
-Pygments==2.19.1
+Pygments==2.19.2
 PyJWT==2.10.1
-pytest==8.4.0
+pytest==8.4.1
 pytest-django==4.11.1
-python-dotenv==1.1.0
+python-dotenv==1.1.1
 requests==2.32.4
 sqlparse==0.5.3
 typing_extensions==4.14.0
